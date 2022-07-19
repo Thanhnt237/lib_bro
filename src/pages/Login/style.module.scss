@@ -1,0 +1,14 @@
+
+.body_right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    .input  {
+        border-radius: 8px;
+    }
+    .button {
+        @extend .input
+    }
+}
