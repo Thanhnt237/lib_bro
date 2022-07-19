@@ -11,35 +11,33 @@ export function* watchDoAuth() {
 
 // eslint-disable-next-line require-yield
 function* handleLogin(action) {
-  let dataRequest = action.payload
+  let dataRequest = action.payload;
   try {
-    const response = yield common_post(apis.login, dataRequest)
-    console.log("loginfff ", response)
+    const response = yield common_post(apis.login, dataRequest);
+    console.log("loginfff ", response);
     if (response) {
       if (response.status === "OK") {
-        // 
-        let {refresh_token, token} = response.result
-        localStorage.setItem(keys.access_token, token)
-        localStorage.setItem(keys.refresh_token, refresh_token)
-        yield put(authSuccess({message: keyActionLogins.LOGIN_SUCCESS}))
+        //
+        let { refresh_token, token, user } = response.result;
+        localStorage.setItem(keys.access_token, token);
+        localStorage.setItem(keys.refresh_token, refresh_token);
+        localStorage.setItem(keys.user_data, JSON.stringify(user));
+        yield put(authSuccess({ user, message: keyActionLogins.LOGIN_SUCCESS }));
       }
       if (response.status === "KO" && response.message.includes("not match")) {
-        yield put(authFail({ message: keyActionLogins.USERNAME_PASSWORD_ERROR }))
+        yield put(authFail({ message: keyActionLogins.USERNAME_PASSWORD_ERROR }));
       }
     } else {
-      yield put(authFail({ message: keyActionLogins.LOGIN_FAIL }))
+      yield put(authFail({ message: keyActionLogins.LOGIN_FAIL }));
     }
-
   } catch (error) {
-    yield put(authFail({ message: keyActionLogins.LOGIN_FAIL }))
+    yield put(authFail({ message: keyActionLogins.LOGIN_FAIL }));
   }
-
-
 }
 
 function* handleLogout() {
-  localStorage.removeItem(keys.access_token)
-  localStorage.removeItem(keys.refresh_token)
+  localStorage.removeItem(keys.access_token);
+  localStorage.removeItem(keys.refresh_token);
   window.location.reload();
 }
 

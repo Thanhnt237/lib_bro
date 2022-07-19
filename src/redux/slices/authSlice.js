@@ -14,22 +14,24 @@ const authSlice = createSlice({
     doLogout() {},
 
     authSuccess(state, action) {
-      state.message = action.payload.message
+      state.message = action.payload.message;
+      state.user = action.payload.user;
     },
 
     authFail(state, action) {
-        state.message = action.payload.message
+      state.message = action.payload.message;
     },
 
     showWarningLogout(state, action) {
       state.showWarningLogout = true;
     },
-
+    updateUser(state, action) {
+      state.user = action.payload;
+    },
     resetAuthMessage(state) {
       state.message = "";
-      state.showWarningLogout = false
+      state.showWarningLogout = false;
     },
-
   },
 });
 
@@ -40,7 +42,7 @@ export const {
   authFail,
   resetAuthMessage,
   showWarningLogout,
-  
+  updateUser,
 } = authSlice.actions;
 
 export default authSlice.reducer;

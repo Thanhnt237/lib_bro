@@ -4,53 +4,56 @@ import { common_post } from "../../helpers";
 import { apis } from "../../constants";
 const { TreeNode } = TreeSelect;
 
-function ModalAddBook({ onOK, loading = false, onEdit }, ref) {
+function ModalAddPhieuTra({ onOK, loading = false, onEdit }, ref) {
+  const [listBook, setListBook] = useState([]);
+  const [user, setListUser] = useState([]);
   const [visible, setVisible] = useState(false);
-  const [name, setName] = useState("");
   const [current, setCurrent] = useState();
-  const [listKeSach, setListKeSach] = useState([]);
-  const [listphongDoc, setListPhongDoc] = useState("");
   const [value, setValue] = useState(undefined);
+  const [newBook, setNewBook] = useState([]);
+  const [newUser, setNewUser] = useState([]);
 
-  async function handleGetListKeSach(KE_SACH_ID = "") {
+  async function handleGetBook() {
     try {
-      const response = await common_post(apis.get_ke_sach, {
-        KE_SACH_ID: KE_SACH_ID,
-      });
+      const response = await common_post(apis.get_sach, {});
       if (response && response.status === "OK") {
-        setListKeSach(response.result);
-      }
-    } catch (error) {
-      throw error;
-    }
-  }
-  async function handleGetListPhongDoc(KE_SACH_ID) {
-    try {
-      const response = await common_post(apis.lay_phong_doc_theo_ke_sach, {
-        KE_SACH_ID: KE_SACH_ID,
-      });
-      if (response && response.status === "OK") {
-        setListPhongDoc(response.result[0].TEN_PHONG_DOC);
-        // console.log(response);
+        setListBook(response.result);
       }
     } catch (error) {
       throw error;
     }
   }
 
-  const onChange = async (newValue) => {
+  async function handleGetUser() {
+    try {
+      const response = await common_post(apis.get_list_user, {});
+      if (response && response.status === "OK") {
+        setListUser(response.result);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const onChangeBookTree = async (newValue) => {
     // console.log(newValue);
-    setValue(newValue);
-    await handleGetListPhongDoc(newValue);
+    setNewBook(newValue);
+    // await handleGetListPhongDoc(newValue);
     // let response = await handleGetListKeSach(newValue);
     // console.log(response);
     // if (response.status === "OK") {
     //   setPhongDoc(response.result[0]);
     // }
   };
+
+  const onChangeUserTree = async (newValue) => {
+    // console.log(newValue)
+    setNewUser(newValue);
+  };
   // console.log(listphongDoc[0]);
   useEffect(() => {
-    handleGetListKeSach();
+    // handleGetBook()
+    // handleGetUser()
   }, []);
 
   useImperativeHandle(
@@ -60,7 +63,6 @@ function ModalAddBook({ onOK, loading = false, onEdit }, ref) {
         openModal(item) {
           if (item) {
             setCurrent(item);
-            setName(item.TEN_SACH);
           }
           setVisible(true);
         },
@@ -73,20 +75,15 @@ function ModalAddBook({ onOK, loading = false, onEdit }, ref) {
   );
 
   function handleClose() {
-    setName("");
-    current && setCurrent();
+    // current && setCurrent();
     setVisible(false);
   }
 
   function onPressOk() {
-    if (name === "") {
-      notification.warning({ message: "Vui lòng điền tên sách" });
-      return;
-    }
     if (current) {
-      onEdit(current, name, value);
+      // onEdit(current, name, value);
     } else {
-      onOK(name, value);
+      onOK(newBook, newUser);
     }
   }
   // console.log(value);
@@ -94,25 +91,42 @@ function ModalAddBook({ onOK, loading = false, onEdit }, ref) {
     <Modal
       visible={visible}
       onCancel={handleClose}
-      title="Thêm mới Sách"
+      title="Thêm mới phiếu"
       onOk={onPressOk}
       confirmLoading={loading}
     >
       <span>Tên Sách</span>
-      <Input
-        onChange={(e) => setName(e.target.value)}
-        value={name}
-        placeholder="Nhập tên kệ sách"
-        style={{ marginTop: "10px" }}
-      />
-
-      <span>Tên Kệ Sách</span>
       <TreeSelect
         showSearch
         style={{
           width: "100%",
         }}
-        value={value}
+        // value={value}
+        dropdownStyle={{
+          maxHeight: 400,
+          overflow: "auto",
+        }}
+        placeholder={value ? value : "Chọn Sách"}
+        allowClear
+        multiple
+        onDropdownVisibleChange={(open) => open && handleGetBook()}
+        onChange={onChangeBookTree}
+        // onLoadData = {handleGetBook()}
+        treeData={listBook.map((c) => {
+          return {
+            value: c.ID,
+            title: c.TEN_KE_SACH,
+          };
+        })}
+      ></TreeSelect>
+
+      <span>Tên người trả</span>
+      <TreeSelect
+        showSearch
+        style={{
+          width: "100%",
+        }}
+        // value={value}
         dropdownStyle={{
           maxHeight: 400,
           overflow: "auto",
@@ -120,17 +134,17 @@ function ModalAddBook({ onOK, loading = false, onEdit }, ref) {
         placeholder={value ? value : "Chọn Ke sach"}
         allowClear
         // treeDefaultExpandAll
-        onChange={onChange}
-        treeData={listKeSach.map((c) => {
+        onDropdownVisibleChange={(open) => open && handleGetUser()}
+        onChange={onChangeUserTree}
+        treeData={user.map((c) => {
           return {
             value: c.ID,
-            title: c.TEN_KE_SACH,
+            title: c.TEN_NGUOI_DUNG,
           };
         })}
       ></TreeSelect>
-      <div>{listphongDoc}</div>
     </Modal>
   );
 }
 
-export default React.forwardRef(ModalAddBook);
+export default React.forwardRef(ModalAddPhieuTra);

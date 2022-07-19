@@ -1,5 +1,6 @@
 export const apis = {
-  baseURL: "http://localhost:8686/",
+  // baseURL: "http://localhost:8686/",
+  baseURL: "https://1a39-123-16-146-8.ap.ngrok.io",
   login: "api/public/nguoiDung/dangNhap",
   refresh_token: "api/public/token/refreshToken",
   get_list_reading_room: "api/resources/phongDoc/layDSPhongDoc",

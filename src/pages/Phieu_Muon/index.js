@@ -10,19 +10,21 @@ import ColumnGroup from "antd/lib/table/ColumnGroup";
 import { data } from "../../assets/data";
 import moment from "moment";
 import Printd from "printd";
-import {templates} from "../../assets/templates";
-import  "../../assets/app.css"
+import { templates } from "../../assets/templates";
+import "../../assets/app.css";
+import { useSelector } from "react-redux";
 
 function Phieu_Muon() {
   const [listPhieu, setListPhieu] = useState([]);
   const [loadingAdd, setLoadingAdd] = useState(false);
   const addRef = useRef();
-    const printRef = useRef();
-    const [html, setHtml] = useState(templates.phieu_muon_sach.html);
+  const printRef = useRef();
+  const [html, setHtml] = useState(templates.phieu_muon_sach.html);
+  const user = useSelector((state) => state.auth.user);
 
   async function getPhieu() {
     try {
-      const response = await common_post(apis.get_phieu_muon, {LOAI_PHIEU: "PHIEU_MUON"});
+      const response = await common_post(apis.get_phieu_muon);
       if (response && response.status === "OK") {
         setListPhieu(response.result);
       }
@@ -30,23 +32,23 @@ function Phieu_Muon() {
       throw error;
     }
   }
-    function escapeRegExp(string) {
-        return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    }
+  function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
 
-    function replaceAll(str, find, replace) {
-        return str.replace(new RegExp(escapeRegExp(find), "g"), replace);
-    }
+  function replaceAll(str, find, replace) {
+    return str.replace(new RegExp(escapeRegExp(find), "g"), replace);
+  }
 
-    async function handleAddPhieuMuon(Book, User) {
+  async function handleAddPhieuMuon(Book, User) {
     console.log(Book);
     console.log(User);
     setLoadingAdd(true);
     try {
       let dataRequest = {
-          list_SACH_ID: Book,
-          NGUOI_MUON_ID: User,
-          NGUOI_DUNG_ID: User
+        list_SACH_ID: Book,
+        NGUOI_MUON_ID: User,
+        NGUOI_DUNG_ID: user.ID,
       };
       const response = await common_post(apis.add_phieu_muon, dataRequest);
       if (response && response.status === "OK") {
@@ -62,49 +64,55 @@ function Phieu_Muon() {
     addRef.current.openModal(item);
   }
 
-    const handlePrint = (template = {}) => {
-        const d = new Printd();
+  const handlePrint = async (ID) => {
+    const d = new Printd();
 
-        let html_phieu = template.html;
-        const data_phieu = data[template.key];
+    let html_phieu = templates.phieu_muon_sach.html;
+    let data_phieu = {};
 
-        console.log(data_phieu);
+    try {
+      const res = await common_post(apis.get_phieu_muon, { ID });
+      if (res.status === "OK") {
+        const data = res.result[0];
+        data_phieu = data;
+      }
+    } catch (error) {
+      console.log(error);
+    }
 
-        Object.keys(data_phieu).forEach((key) => {
-            if (key === "DANH_SACH") {
-                let data_table = "";
-                data_phieu[key].forEach(
-                    (row_data, index) =>
-                        (data_table += `
+    Object.keys(data_phieu).forEach((key) => {
+      if (key === "SACH") {
+        let data_table = "";
+        data_phieu[key].forEach(
+          (row_data, index) =>
+            (data_table += `
           <tr>
             <td>${index + 1}</td>
-            ${Object.values(row_data)
-                            .map((col_data) => `<td>${col_data}</td>`)
-                            .join("")}
+            <td>${row_data.TEN_SACH}</td>
           </tr>
         `)
-                );
-                html_phieu = replaceAll(html_phieu, `[${key}]`, data_table);
-            } else html_phieu = replaceAll(html_phieu, `[${key}]`, data_phieu[key]);
-        });
-
-        html_phieu = replaceAll(
-            html_phieu,
-            `[REALTIME]`,
-            moment().format("HH:mm") +
-            " ngày " +
-            moment().format("DD") +
-            " tháng " +
-            moment().format("MM") +
-            " năm " +
-            moment().format("YYYY")
         );
+        html_phieu = replaceAll(html_phieu, `[${key}]`, data_table);
+      } else html_phieu = replaceAll(html_phieu, `[${key}]`, data_phieu[key]);
+    });
 
-        setHtml(html_phieu);
+    html_phieu = replaceAll(
+      html_phieu,
+      `[REALTIME]`,
+      moment().format("HH:mm") +
+        " ngày " +
+        moment().format("DD") +
+        " tháng " +
+        moment().format("MM") +
+        " năm " +
+        moment().format("YYYY")
+    );
 
-        setTimeout(() => {
-            d.print(printRef.current, [
-                ` section { min-height: 50vh; }
+    setHtml(html_phieu);
+
+    setTimeout(() => {
+      d.print(printRef.current, [
+        ` section { min-height: 50vh; }
           section * { font-family: 'Times New Roman', Times, serif; }
           @media print {
             section, .signs-section { break-inside: avoid; }
@@ -114,49 +122,53 @@ function Phieu_Muon() {
           table { border-collapse: collapse; }
           td { padding: 5px; }
         `,
-            ]);
-        }, 500);
-    };
+      ]);
+    }, 500);
+  };
 
   async function handleDelete(item) {
-  //   console.log(item);
-  //   try {
-  //     let dataRequest = {
-  //       ID: item.ID,
-  //       TRANG_THAI: 0,
-  //     };
-  //     const response = await common_post(apis.edit_sach, dataRequest);
-  //     if (response && response.status === "OK") {
-  //       getSach();
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
+    //   console.log(item);
+    //   try {
+    //     let dataRequest = {
+    //       ID: item.ID,
+    //       TRANG_THAI: 0,
+    //     };
+    //     const response = await common_post(apis.edit_sach, dataRequest);
+    //     if (response && response.status === "OK") {
+    //       getSach();
+    //     }
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
   }
   async function handleEdit(item, name, value) {
-  //   console.log(item);
-  //   console.log(name);
-  //   console.log(value);
-  //   setLoadingAdd(true);
-  //   try {
-  //     let dataRequest = {
-  //       ID: item.ID,
-  //       TEN_SACH: name,
-  //       KE_SACH_ID: value,
-  //     };
-  //     const response = await common_post(apis.edit_sach, dataRequest);
-  //     if (response && response.status === "OK") {
-  //       getSach();
-  //       setLoadingAdd(false);
-  //       addRef.current.closeModal();
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
+    //   console.log(item);
+    //   console.log(name);
+    //   console.log(value);
+    //   setLoadingAdd(true);
+    //   try {
+    //     let dataRequest = {
+    //       ID: item.ID,
+    //       TEN_SACH: name,
+    //       KE_SACH_ID: value,
+    //     };
+    //     const response = await common_post(apis.edit_sach, dataRequest);
+    //     if (response && response.status === "OK") {
+    //       getSach();
+    //       setLoadingAdd(false);
+    //       addRef.current.closeModal();
+    //     }
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
   }
+
   useEffect(() => {
     getPhieu();
   }, []);
+
+  console.log(user);
+
   const columns = [
     {
       title: "STT",
@@ -169,21 +181,24 @@ function Phieu_Muon() {
     {
       title: "Loại phiếu",
       dataIndex: "LOAI_PHIEU",
+      render: (data) => (data === "PHIEU_MUON" ? "Phiếu mượn" : "Phiếu trả"),
     },
     {
-      title: "Tên Phòng Đọc",
-      dataIndex: "TEN_PHONG_DOC",
+      title: "Ngày mượn",
+      dataIndex: "NGAY",
+      render: (data) => moment(data, "YYYYMMDD").format("DD/MM/YYYY"),
     },
-      {
-          title: "Ngày mượn",
-          dataIndex: "NGAY",
-      },
-      {
-          title: "Tên người mượn",
-          dataIndex: "TEN_NGUOI_MUON",
-      },
+    {
+      title: "Tên người mượn",
+      dataIndex: "TEN_NGUOI_MUON",
+    },
+    {
+      title: "Tên người tạo phiếu",
+      render: () => user.TEN_NGUOI_DUNG,
+    },
     {
       title: "",
+      dataIndex: "ID",
       // render: (record) => (
       //   <Dropdown
       //     overlay={
@@ -196,10 +211,8 @@ function Phieu_Muon() {
       //     <Button icon={<EllipsisOutlined />} type="text"></Button>
       //   </Dropdown>
       // ),
-      render: (record) => (
-        <Space
-            onClick={e => e.stopPropagation()}
-        >
+      render: (ID) => (
+        <Space onClick={(e) => e.stopPropagation()}>
           {/* {isAtEditPage && (
             <Tooltip title="Chỉnh sửa">
               <Button
@@ -214,7 +227,7 @@ function Phieu_Muon() {
             title="Bạn có chắc chắn muốn xóa phòng này không?"
             onConfirm={(e) => {
               e.stopPropagation();
-              handleDelete(record);
+              handleDelete(ID);
             }}
             okText="Chắn chắn"
             cancelText="Quay lại"
@@ -228,14 +241,14 @@ function Phieu_Muon() {
               ></Button>
             </Tooltip>
           </Popconfirm>
-            <Tooltip title = "Print">
-                <Button
-                    type="primary"
-                    danger
-                    icon={<PrinterOutlined />}
-                    onClick={() => handlePrint(templates.phieu_muon_sach)}
-                ></Button>
-            </Tooltip>
+          <Tooltip title="Print">
+            <Button
+              type="primary"
+              danger
+              icon={<PrinterOutlined />}
+              onClick={() => handlePrint(ID)}
+            ></Button>
+          </Tooltip>
         </Space>
       ),
     },
@@ -250,6 +263,7 @@ function Phieu_Muon() {
         totalText={`Tổng số phiếu : `}
       />
       <Table
+        rowKey="ID"
         dataSource={listPhieu.map((item, index) => ({
           ...item,
           STT: index + 1,
@@ -272,7 +286,7 @@ function Phieu_Muon() {
         // onEdit={(item, name, value) => handleEdit(item, name, value)}
         loading={loadingAdd}
       />
-        <div ref={printRef} dangerouslySetInnerHTML={{ __html: html }} className="print-src" />
+      <div ref={printRef} dangerouslySetInnerHTML={{ __html: html }} className="print-src" />
     </div>
   );
 }
