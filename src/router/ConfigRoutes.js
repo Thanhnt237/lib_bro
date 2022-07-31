@@ -17,7 +17,7 @@ export const PublicRoute = ({ component: Component, ...rest }) => {
   return (
     <Route
       {...rest}
-      render={(props) => (isAuth ? <Redirect to={paths.room_reading} /> : <Component {...props} />)}
+      render={(props) => (isAuth ? <Redirect to={paths.dashboard} /> : <Component {...props} />)}
     />
   );
 };

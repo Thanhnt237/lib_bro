@@ -4,7 +4,7 @@ import styles from "./style.module.scss";
 import { common_post } from "../../helpers";
 import { apis } from "../../constants";
 import TopHeader from "../../components/TopHeader";
-import { DeleteOutlined, SelectOutlined} from "@ant-design/icons";
+import { DeleteOutlined, SelectOutlined } from "@ant-design/icons";
 import ModalAddBook from "./ModalAddBook";
 
 function Book() {
@@ -47,7 +47,7 @@ function Book() {
       console.log(error);
     }
   }
-  async function handleLendBook(){
+  async function handleLendBook() {
     setLoadingAdd(true);
   }
   function onClickRow(item) {
@@ -160,7 +160,7 @@ function Book() {
           </Popconfirm>
         </Space>
       ),
-    }
+    },
   ];
 
   return (
@@ -169,7 +169,7 @@ function Book() {
         title="Sách"
         onAdd={() => addRef.current.openModal()}
         // onChangeSearch={(txt) => console.log(txt)}
-        // totalText={`Tổng số Kệ Sách : `}
+        totalText={listSach?.length}
       />
       <Table
         dataSource={listSach.map((item, index) => ({

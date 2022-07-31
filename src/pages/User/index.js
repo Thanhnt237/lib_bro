@@ -8,7 +8,7 @@ import { common_post } from "../../helpers";
 import ModalConfigUser from "./ModalConfigUser";
 import styles from "./style.module.scss";
 import ModalSachDaMuon from "./ModalSachDaMuon";
-import {SearchOutlined} from "@ant-design/icons";
+import { SearchOutlined } from "@ant-design/icons";
 
 function User() {
   const addRef = useRef();
@@ -127,19 +127,19 @@ function User() {
                 onClick={(e) => e.stopPropagation()}
               ></Button>
             </Tooltip>
-
-            <Tooltip title={"Sách đã mượn"}>
-              <Button
-                  type="primary"
-                  danger
-                  icon={<SearchOutlined />}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    bookRef.current.openModal()
-                  }}
-              ></Button>
-            </Tooltip>
           </Popconfirm>
+
+          <Tooltip title={"Sách đã mượn"}>
+            <Button
+              type="primary"
+              ghost
+              icon={<SearchOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+                bookRef.current.openModal();
+              }}
+            ></Button>
+          </Tooltip>
         </Space>
       ),
     },
@@ -150,7 +150,7 @@ function User() {
         title="Danh sách người dùng"
         onAdd={() => addRef.current.openModal()}
         onChangeSearch={(txt) => getListUser(txt)}
-        totalText={`Tổng số người dùng : ${listUser.length}`}
+        totalText={listUser.length}
       />
 
       <Table
@@ -182,12 +182,12 @@ function User() {
         loading={loadingAdd}
       />
       <ModalSachDaMuon
-          ref={bookRef}
-          // onOK={(Book, value, author) => {
-          //   handleAddBook(Book, value, author);
-          // }}
-          // onEdit={(item, name, value) => handleEdit(item, name, value)}
-          loading={loadingAdd}
+        ref={bookRef}
+        // onOK={(Book, value, author) => {
+        //   handleAddBook(Book, value, author);
+        // }}
+        // onEdit={(item, name, value) => handleEdit(item, name, value)}
+        loading={loadingAdd}
       />
     </div>
   );

@@ -153,7 +153,7 @@ function RoomReading() {
         title="Phòng đọc"
         onAdd={() => addRef.current.openModal()}
         onChangeSearch={(txt) => getListRoom(txt)}
-        totalText={`Tổng số phòng : ${listRoom.length}`}
+        totalText={listRoom.length}
       />
       <Table
         dataSource={listRoom.map((item, index) => ({

@@ -147,7 +147,7 @@ function Author() {
         title="Tác Giả"
         onAdd={() => addRef.current.openModal()}
         // onChangeSearch={(txt) => getListRoom(txt)}
-        // totalText={`Tổng số phòng : ${listRoom.length}`}
+        totalText={listAuthor?.length}
       />
       <Table
         dataSource={listAuthor.map((item, index) => ({

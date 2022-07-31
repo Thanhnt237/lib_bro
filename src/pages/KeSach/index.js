@@ -161,7 +161,7 @@ function KeSach() {
         title="Kệ Sách"
         onAdd={() => addRef.current.openModal()}
         onChangeSearch={(txt) => console.log(txt)}
-        totalText={`Tổng số Kệ Sách : `}
+        totalText={listKeSach?.length}
       />
       <Table
         dataSource={listKeSach.map((item, index) => ({

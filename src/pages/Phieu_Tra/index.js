@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Button, Table, Space, Popconfirm, Tooltip } from "antd";
 import styles from "./style.module.scss";
-import { common_post } from "../../helpers";
+import { common_post, exportToCSV } from "../../helpers";
 import { apis } from "../../constants";
 import TopHeader from "../../components/TopHeader";
 import { DeleteOutlined, PrinterOutlined } from "@ant-design/icons";
@@ -169,6 +169,7 @@ function Phieu_Tra() {
     {
       title: "STT",
       dataIndex: "STT",
+      render: (data, record, index) => index + 1,
     },
     {
       title: "Tên phiếu",
@@ -190,6 +191,7 @@ function Phieu_Tra() {
     },
     {
       title: "Tên người tạo phiếu",
+      dataIndex: "TEN_NGUOI_TAO",
       render: () => user.TEN_NGUOI_DUNG,
     },
     {
@@ -241,7 +243,7 @@ function Phieu_Tra() {
           <Tooltip title="Print">
             <Button
               type="primary"
-              danger
+              ghost
               icon={<PrinterOutlined />}
               onClick={() => handlePrint(ID)}
             ></Button>
@@ -251,20 +253,40 @@ function Phieu_Tra() {
     },
   ];
 
+  const handleExportExcel = () => {
+    const exportList = listPhieu.map((phieu, index) => {
+      const item = {};
+
+      columns.forEach((column) => {
+        if (!column.title) return;
+
+        const title = column.title;
+        const key = column.dataIndex;
+        const render = column.render;
+
+        item[title] = render ? render(phieu[key], phieu, index) : phieu[key];
+      });
+
+      return item;
+    });
+
+    console.log(exportList);
+
+    exportToCSV(exportList);
+  };
+
   return (
     <div className={styles.container}>
       <TopHeader
         title="Phiếu trả sách"
         onAdd={() => addRef.current.openModal()}
         onChangeSearch={(txt) => console.log(txt)}
-        totalText={`Tổng số phiếu : `}
+        totalText={listPhieu?.length}
+        onExportExcel={handleExportExcel}
       />
       <Table
         rowKey="ID"
-        dataSource={listPhieu.map((item, index) => ({
-          ...item,
-          STT: index + 1,
-        }))}
+        dataSource={listPhieu}
         columns={columns}
         pagination={{ pageSize: 13 }}
         style={{ margin: "15px" }}
