@@ -24,11 +24,15 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
-  getItem("Phòng đọc", paths.room_reading, <DesktopOutlined />),
-  getItem("Người dùng", paths.user, <UserOutlined />),
-  getItem("Kệ Sách", paths.bookshelf),
-  getItem("Tác Giả", paths.author),
-  getItem("Sách", paths.book),
+    getItem("Dashboard", paths.dashboard),
+    getItem("Phòng đọc", paths.room_reading, <DesktopOutlined />),
+    getItem("Người dùng", paths.user, <UserOutlined />),
+    getItem("Kệ Sách", paths.bookshelf),
+    getItem("Tác Giả", paths.author),
+    getItem("Sách", paths.book),
+    getItem("Kho sách", paths.book_storage),
+    getItem("Phiếu mượn", paths.phieu_muon),
+    getItem("Phiếu trả", paths.phieu_tra),
 ];
 
 const Sider = () => {

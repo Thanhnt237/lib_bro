@@ -1,5 +1,6 @@
 export const paths = {
   home: "/",
+  dashboard: "/dashboard",
   login: "/login",
   room_reading: "/phong-doc",
   user: "/sinh-vien",
@@ -8,6 +9,7 @@ export const paths = {
   book: "/sach",
   phieu_muon: "/phieu-muon",
   phieu_tra: "/phieu-tra",
+  book_storage: "/kho-sach"
 };
 
 export const titlePath = {
@@ -20,4 +22,6 @@ export const titlePath = {
   [paths.book]: "Sách",
   [paths.phieu_muon]: "Phiếu Mượn Sách",
   [paths.phieu_muon]: "Phiếu Trả Sách",
+  [paths.book_storage]: "Kho sách",
+  [paths.home]: "Trang chủ",
 };

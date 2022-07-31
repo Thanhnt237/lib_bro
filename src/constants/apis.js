@@ -1,6 +1,6 @@
 export const apis = {
-  // baseURL: "http://localhost:8686/",
-  baseURL: "https://1a39-123-16-146-8.ap.ngrok.io",
+  baseURL: "http://localhost:8686/",
+  // baseURL: "https://1a39-123-16-146-8.ap.ngrok.io",
   login: "api/public/nguoiDung/dangNhap",
   refresh_token: "api/public/token/refreshToken",
   get_list_reading_room: "api/resources/phongDoc/layDSPhongDoc",
@@ -23,4 +23,10 @@ export const apis = {
   get_phieu_tra: "/api/resources/phieu/layDSPhieuTraSach",
   add_phieu_muon: "/api/resources/phieu/taoPhieuMuonSach",
   add_phieu_tra: "/api/resources/phieu/taoPhieuTraSach",
+  get_book_storage: "/api/resources/kho/laySachTrongKho",
+  add_book_storage: "/api/resources/kho/nhapSach",
+  thongKeLuotMuonSachTheoNgay: "/api/resources/dashboard/thongKeLuotMuonSachTheoNgay",
+  thongKeLuotTraTheoNgay: "/api/resources/dashboard/thongKeLuotTraTheoNgay",
+  thongKeNhapSachTheoNgay: "/api/resources/dashboard/thongKeNhapSachTheoNgay",
+  get_sach_nguoi_dung: "/api/resources/sach/laySachNguoiDung",
 };

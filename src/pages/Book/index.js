@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Row, Col, Button, Table, Space, Popconfirm, Tooltip } from "antd";
+import { Button, Table, Space, Popconfirm, Tooltip } from "antd";
 import styles from "./style.module.scss";
 import { common_post } from "../../helpers";
 import { apis } from "../../constants";
 import TopHeader from "../../components/TopHeader";
-import { DeleteOutlined, EditFilled, SelectOutlined} from "@ant-design/icons";
+import { DeleteOutlined, SelectOutlined} from "@ant-design/icons";
 import ModalAddBook from "./ModalAddBook";
-import ColumnGroup from "antd/lib/table/ColumnGroup";
 
 function Book() {
   const [listSach, setListSach] = useState([]);
   const [loadingAdd, setLoadingAdd] = useState(false);
   const addRef = useRef();
+
   async function getSach() {
     try {
       const response = await common_post(apis.get_sach, {});
@@ -158,14 +158,6 @@ function Book() {
               ></Button>
             </Tooltip>
           </Popconfirm>
-          <Tooltip title="Mượn sách">
-            <Button
-                type="primary"
-                danger
-                icon={<SelectOutlined />}
-                onClick={(e) => e.stopPropagation()}
-            ></Button>
-          </Tooltip>
         </Space>
       ),
     }
@@ -181,6 +173,7 @@ function Book() {
       />
       <Table
         dataSource={listSach.map((item, index) => ({
+          key: index,
           ...item,
           STT: index + 1,
         }))}
@@ -193,14 +186,6 @@ function Book() {
             onClick: (event) => onClickRow(record), // click row
           };
         }}
-      />
-      <ModalAddBook
-        ref={addRef}
-        onOK={(Book, value, author) => {
-          handleAddBook(Book, value, author);
-        }}
-        onEdit={(item, name, value) => handleEdit(item, name, value)}
-        loading={loadingAdd}
       />
     </div>
   );

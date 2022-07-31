@@ -7,9 +7,12 @@ import { apis } from "../../constants";
 import { common_post } from "../../helpers";
 import ModalConfigUser from "./ModalConfigUser";
 import styles from "./style.module.scss";
+import ModalSachDaMuon from "./ModalSachDaMuon";
+import {SearchOutlined} from "@ant-design/icons";
 
 function User() {
   const addRef = useRef();
+  const bookRef = useRef();
   const [loadingTable, setLoadingTable] = useState(false);
   const [loadingAdd, setLoadingAdd] = useState(false);
   const [listUser, setListUser] = useState([]);
@@ -124,6 +127,18 @@ function User() {
                 onClick={(e) => e.stopPropagation()}
               ></Button>
             </Tooltip>
+
+            <Tooltip title={"Sách đã mượn"}>
+              <Button
+                  type="primary"
+                  danger
+                  icon={<SearchOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    bookRef.current.openModal()
+                  }}
+              ></Button>
+            </Tooltip>
           </Popconfirm>
         </Space>
       ),
@@ -165,6 +180,14 @@ function User() {
         }}
         onEdit={(current, values) => handleEditUser(current, values)}
         loading={loadingAdd}
+      />
+      <ModalSachDaMuon
+          ref={bookRef}
+          // onOK={(Book, value, author) => {
+          //   handleAddBook(Book, value, author);
+          // }}
+          // onEdit={(item, name, value) => handleEdit(item, name, value)}
+          loading={loadingAdd}
       />
     </div>
   );

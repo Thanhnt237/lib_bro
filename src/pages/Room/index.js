@@ -157,6 +157,7 @@ function RoomReading() {
       />
       <Table
         dataSource={listRoom.map((item, index) => ({
+          key: index,
           ...item,
           STT: index + 1,
         }))}
