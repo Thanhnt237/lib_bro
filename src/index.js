@@ -4,15 +4,16 @@ import reportWebVitals from "./reportWebVitals";
 import { AppConfig } from "./configs";
 import { AppRouter } from "./router";
 import { Provider } from "react-redux";
-import store from "./redux/store"
+import store from "./redux/store";
+import "./assets/main.scss";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-    <Provider store={store} >
-      <AppConfig>
-        <AppRouter />
-      </AppConfig>
-    </Provider>
+  <Provider store={store}>
+    <AppConfig>
+      <AppRouter />
+    </AppConfig>
+  </Provider>
 );
 
 reportWebVitals();

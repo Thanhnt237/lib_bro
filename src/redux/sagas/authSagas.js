@@ -38,6 +38,7 @@ function* handleLogin(action) {
 function* handleLogout() {
   localStorage.removeItem(keys.access_token);
   localStorage.removeItem(keys.refresh_token);
+  localStorage.removeItem(keys.user_data);
   window.location.reload();
 }
 
