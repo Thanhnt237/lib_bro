@@ -108,36 +108,36 @@ function Dashboard() {
   }
 
   return (
-    <div className={styles.container}>
-      <TopHeader title="Dashboard" />
+      <div className={styles.container}>
+        <TopHeader title="Dashboard" />
 
-      <div style={{ overflow: "auto", height: "calc(100vh - 53px)", padding: 20 }}>
-        <h1>Bảng điều khiển</h1>
+        <div style={{ overflow: "auto", height: "calc(100vh - 53px)", padding: 20 }}>
+          <h1>Bảng điều khiển</h1>
 
-        <Row gutter={[0, 50]}>
-          <Col span={12}>
-            <h2 style={{ marginBottom: "15px" }}>Thống kê số lượng mượn sách theo ngày</h2>
-            <div style={{ paddingInline: 10 }}>
-              {configDataMuon ? <Column {...configDataMuon} /> : <div></div>}
-            </div>
-          </Col>
+          <Row gutter={[0, 50]}>
+            <Col span={12}>
+              <h2 style={{ marginBottom: "15px" }}>Thống kê số lượng mượn sách theo ngày</h2>
+              <div style={{ paddingInline: 10 }}>
+                {configDataMuon ? <Column {...configDataMuon} /> : <div></div>}
+              </div>
+            </Col>
 
-          <Col span={12}>
-            <h2 style={{ marginBottom: "15px" }}>Thống kê số lượng trả sách theo ngày</h2>
-            <div style={{ paddingInline: 10 }}>
-              {configDataTra ? <Column {...configDataTra} /> : <div></div>}
-            </div>
-          </Col>
+            <Col span={12}>
+              <h2 style={{ marginBottom: "15px" }}>Thống kê số lượng trả sách theo ngày</h2>
+              <div style={{ paddingInline: 10 }}>
+                {configDataTra ? <Column {...configDataTra} /> : <div></div>}
+              </div>
+            </Col>
 
-          <Col span={12}>
-            <h2 style={{ marginBottom: "15px" }}>Thống kê số lượng sách nhập theo ngày</h2>
-            <div style={{ paddingInline: 10 }}>
-              {configDataNhap ? <Column {...configDataNhap} /> : <div></div>}
-            </div>
-          </Col>
-        </Row>
+            <Col span={12}>
+              <h2 style={{ marginBottom: "15px" }}>Thống kê số lượng sách nhập theo ngày</h2>
+              <div style={{ paddingInline: 10 }}>
+                {configDataNhap ? <Column {...configDataNhap} /> : <div></div>}
+              </div>
+            </Col>
+          </Row>
+        </div>
       </div>
-    </div>
   );
 }
 

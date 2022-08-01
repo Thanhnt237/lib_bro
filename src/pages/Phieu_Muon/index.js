@@ -1,5 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Row, Col, Button, Table, Space, Popconfirm, Tooltip } from "antd";
+import {
+  Row,
+  Col,
+  Button,
+  Table,
+  Space,
+  Popconfirm,
+  Tooltip,
+  notification,
+} from "antd";
 import styles from "./style.module.scss";
 import { common_post, exportToCSV } from "../../helpers";
 import { apis } from "../../constants";
@@ -53,6 +62,7 @@ function Phieu_Muon() {
       const response = await common_post(apis.add_phieu_muon, dataRequest);
       if (response && response.status === "OK") {
         setLoadingAdd(false);
+        notification.success({ message: "Thành công" });
         addRef.current.closeModal();
       }
     } catch (error) {
@@ -286,7 +296,11 @@ function Phieu_Muon() {
         // onEdit={(item, name, value) => handleEdit(item, name, value)}
         loading={loadingAdd}
       />
-      <div ref={printRef} dangerouslySetInnerHTML={{ __html: html }} className="print-src" />
+      <div
+        ref={printRef}
+        dangerouslySetInnerHTML={{ __html: html }}
+        className="print-src"
+      />
     </div>
   );
 }

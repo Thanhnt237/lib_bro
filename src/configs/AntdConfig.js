@@ -10,8 +10,8 @@ ConfigProvider.config({
 
 export const AntdConfig = ({ children }) => {
   return (
-    <ConfigProvider locale={viVN} input={{ autoComplete: "new_password" }}>
-      {children}
-    </ConfigProvider>
+      <ConfigProvider locale={viVN} input={{ autoComplete: "new_password" }}>
+        {children}
+      </ConfigProvider>
   );
 };

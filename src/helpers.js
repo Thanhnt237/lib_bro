@@ -19,7 +19,7 @@ export const common_post = async (url, body) => {
 export const exportToCSV = async (csvData = [], fileName = "data", offsetRow = 0) => {
   try {
     const fileType =
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
 
     const fileExtension = ".xlsx";
 
@@ -34,9 +34,9 @@ export const exportToCSV = async (csvData = [], fileName = "data", offsetRow = 0
     }
 
     XLSX.utils.sheet_add_aoa(
-      ws,
-      new Array(offsetRow).fill(null).map(() => offColumns),
-      { origin: 0 }
+        ws,
+        new Array(offsetRow).fill(null).map(() => offColumns),
+        { origin: 0 }
     );
 
     let wb = { Sheets: { data: ws }, SheetNames: ["data"] };

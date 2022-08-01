@@ -1,5 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Row, Col, Button, Table, Space, Popconfirm, Tooltip } from "antd";
+import {
+  Row,
+  Col,
+  Button,
+  Table,
+  Space,
+  Popconfirm,
+  Tooltip,
+  notification,
+} from "antd";
 import styles from "./style.module.scss";
 import { common_post } from "../../helpers";
 import { apis } from "../../constants";
@@ -41,8 +50,11 @@ function RoomReading() {
         ],
       };
       const response = await common_post(apis.add_reading_room, dataRequest);
+      if (response && response.status === "KO")
+        notification.error({ message: "Thêm phòng đọc thất bại" });
       if (response && response.status === "OK") {
         getListRoom();
+        notification.success({ message: "Thêm phòng đọc thành công" });
         setLoadingAdd(false);
         addRef.current.closeModal();
       }
@@ -61,6 +73,7 @@ function RoomReading() {
       const response = await common_post(apis.edit_reading_room, dataRequest);
       if (response && response.status === "OK") {
         getListRoom();
+        notification.success({ message: "Sửa phòng đọc thành công" });
         setLoadingAdd(false);
         addRef.current.closeModal();
       }
@@ -77,6 +90,7 @@ function RoomReading() {
       };
       const response = await common_post(apis.edit_reading_room, dataRequest);
       if (response && response.status === "OK") {
+        notification.success({ message: "Xóa phòng đọc thành công" });
         getListRoom();
       }
     } catch (error) {
@@ -153,7 +167,7 @@ function RoomReading() {
         title="Phòng đọc"
         onAdd={() => addRef.current.openModal()}
         onChangeSearch={(txt) => getListRoom(txt)}
-        totalText={listRoom.length}
+        totalText={`Tổng số phòng : ${listRoom.length}`}
       />
       <Table
         dataSource={listRoom.map((item, index) => ({

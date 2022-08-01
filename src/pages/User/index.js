@@ -1,5 +1,5 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Popconfirm, Space, Table, Tooltip } from "antd";
+import { Button, notification, Popconfirm, Space, Table, Tooltip } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import SwitchCustom from "../../components/SwitchCustom";
 import TopHeader from "../../components/TopHeader";
@@ -39,8 +39,12 @@ function User() {
     setLoadingAdd(true);
     try {
       const response = await common_post(apis.add_user, { data: [user] });
+      if (response && response.status === "KO") {
+        notification.error({ message: "Thêm người dùng thất bại" });
+      }
       if (response && response.status === "OK") {
         setLoadingAdd(false);
+        notification.success({ message: "Thêm người dùng thành công" });
         addRef.current.closeModal();
         getListUser();
       }
@@ -54,8 +58,12 @@ function User() {
         ID: current.ID,
         ...values,
       });
+      if (response && response.status === "KO")
+        notification.error({ message: "Sửa người dùng thất bại" });
+
       if (response && response.status === "OK") {
         setLoadingAdd(false);
+        notification.success({ message: "Sửa người dùng thành công" });
         addRef.current.closeModal();
         getListUser();
       }
@@ -128,15 +136,14 @@ function User() {
               ></Button>
             </Tooltip>
           </Popconfirm>
-
           <Tooltip title={"Sách đã mượn"}>
             <Button
               type="primary"
-              ghost
+              danger
               icon={<SearchOutlined />}
               onClick={(e) => {
                 e.stopPropagation();
-                bookRef.current.openModal();
+                bookRef.current.openModal(record);
               }}
             ></Button>
           </Tooltip>
@@ -150,7 +157,7 @@ function User() {
         title="Danh sách người dùng"
         onAdd={() => addRef.current.openModal()}
         onChangeSearch={(txt) => getListUser(txt)}
-        totalText={listUser.length}
+        totalText={`Tổng số người dùng : ${listUser.length}`}
       />
 
       <Table

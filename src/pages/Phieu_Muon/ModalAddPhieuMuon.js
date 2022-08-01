@@ -6,12 +6,12 @@ const { TreeNode } = TreeSelect;
 
 function ModalAddPhieuMuon({ onOK, loading = false, onEdit }, ref) {
   const [listBook, setListBook] = useState([]);
-  const [user, setListUser] = useState([])
+  const [user, setListUser] = useState([]);
   const [visible, setVisible] = useState(false);
   const [current, setCurrent] = useState();
   const [value, setValue] = useState(undefined);
   const [newBook, setNewBook] = useState([]);
-  const [newUser, setNewUser] = useState([])
+  const [newUser, setNewUser] = useState([]);
 
   async function handleGetBook() {
     try {
@@ -48,8 +48,8 @@ function ModalAddPhieuMuon({ onOK, loading = false, onEdit }, ref) {
 
   const onChangeUserTree = async (newValue) => {
     // console.log(newValue)
-    setNewUser(newValue)
-  }
+    setNewUser(newValue);
+  };
   // console.log(listphongDoc[0]);
   useEffect(() => {
     // handleGetBook()
@@ -97,27 +97,27 @@ function ModalAddPhieuMuon({ onOK, loading = false, onEdit }, ref) {
     >
       <span>Tên Sách</span>
       <TreeSelect
-          showSearch
-          style={{
-            width: "100%",
-          }}
-          // value={value}
-          dropdownStyle={{
-            maxHeight: 400,
-            overflow: "auto",
-          }}
-          placeholder={value ? value : "Chọn Sách"}
-          allowClear
-          multiple
-          onDropdownVisibleChange={open => open && handleGetBook()}
-          onChange={onChangeBookTree}
-          // onLoadData = {handleGetBook()}
-          treeData={listBook.map((c) => {
-            return {
-              value: c.ID,
-              title: c.TEN_KE_SACH,
-            };
-          })}
+        showSearch
+        style={{
+          width: "100%",
+        }}
+        // value={value}
+        dropdownStyle={{
+          maxHeight: 400,
+          overflow: "auto",
+        }}
+        placeholder={value ? value : "Chọn Sách"}
+        allowClear
+        multiple
+        onDropdownVisibleChange={(open) => open && handleGetBook()}
+        onChange={onChangeBookTree}
+        // onLoadData = {handleGetBook()}
+        treeData={listBook.map((c) => {
+          return {
+            value: c.ID,
+            title: c.TEN_SACH,
+          };
+        })}
       ></TreeSelect>
 
       <span>Tên người mượn</span>
@@ -134,7 +134,7 @@ function ModalAddPhieuMuon({ onOK, loading = false, onEdit }, ref) {
         placeholder={value ? value : "Chọn Ke sach"}
         allowClear
         // treeDefaultExpandAll
-        onDropdownVisibleChange={open => open && handleGetUser()}
+        onDropdownVisibleChange={(open) => open && handleGetUser()}
         onChange={onChangeUserTree}
         treeData={user.map((c) => {
           return {

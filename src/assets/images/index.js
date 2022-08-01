@@ -1,3 +1,4 @@
 import imgBachKhoa from "./bachkhoa.png";
 import BookShelf from "./bookshelf.svg";
-export { imgBachKhoa, BookShelf };
+import preload from "./preload.jpg"
+export { imgBachKhoa, BookShelf, preload };

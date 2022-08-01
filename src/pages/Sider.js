@@ -1,19 +1,16 @@
 import React, { useState } from "react";
-import { Layout, Menu, Breadcrumb, Button, Space, Row } from "antd";
+import { Layout, Menu, Button, Space, Row } from "antd";
 import {
   DesktopOutlined,
-  PieChartOutlined,
-  FileOutlined,
-  TeamOutlined,
   UserOutlined,
   LogoutOutlined,
+  AccountBookOutlined,
+  UserSwitchOutlined,
 } from "@ant-design/icons";
 import { paths } from "../constants";
 import { useHistory, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { doLogout } from "../redux/slices/authSlice";
-import KeSach from "./KeSach";
-// import { BookShelf } from "../assets/images";
 function getItem(label, key, icon, children) {
   return {
     key,
@@ -24,15 +21,22 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
-    getItem("Dashboard", paths.dashboard),
+  getItem("Dashboard", paths.dashboard),
+  getItem("Quản lý", null, <DesktopOutlined />, [
     getItem("Phòng đọc", paths.room_reading, <DesktopOutlined />),
-    getItem("Người dùng", paths.user, <UserOutlined />),
-    getItem("Kệ Sách", paths.bookshelf),
-    getItem("Tác Giả", paths.author),
+    getItem("Kệ Sách", paths.bookshelf, <AccountBookOutlined />),
+    getItem("Tác Giả", paths.author, <UserSwitchOutlined />),
+  ]),
+  getItem("Người dùng", paths.user, <UserOutlined />),
+
+  getItem("Quản lý sách", null, null, [
     getItem("Sách", paths.book),
     getItem("Kho sách", paths.book_storage),
+  ]),
+  getItem("Quản lý mượn trả", null, null, [
     getItem("Phiếu mượn", paths.phieu_muon),
     getItem("Phiếu trả", paths.phieu_tra),
+  ]),
 ];
 
 const Sider = () => {
@@ -70,7 +74,7 @@ const Sider = () => {
         top: 0,
         overflow: "auto",
       }}
-      collapsed={true}
+      collapsed={false}
     >
       <Row
         align="middle"

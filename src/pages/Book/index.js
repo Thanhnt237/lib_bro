@@ -4,7 +4,7 @@ import styles from "./style.module.scss";
 import { common_post } from "../../helpers";
 import { apis } from "../../constants";
 import TopHeader from "../../components/TopHeader";
-import { DeleteOutlined, SelectOutlined } from "@ant-design/icons";
+import { DeleteOutlined } from "@ant-design/icons";
 import ModalAddBook from "./ModalAddBook";
 
 function Book() {
@@ -12,9 +12,11 @@ function Book() {
   const [loadingAdd, setLoadingAdd] = useState(false);
   const addRef = useRef();
 
-  async function getSach() {
+  async function getSach(search_string = "") {
     try {
-      const response = await common_post(apis.get_sach, {});
+      const response = await common_post(apis.get_sach, {
+        search_string: search_string,
+      });
       if (response && response.status === "OK") {
         setListSach(response.result);
       }
@@ -168,8 +170,8 @@ function Book() {
       <TopHeader
         title="Sách"
         onAdd={() => addRef.current.openModal()}
-        // onChangeSearch={(txt) => console.log(txt)}
-        totalText={listSach?.length}
+        onChangeSearch={(txt) => getSach(txt)}
+        totalText={`Tổng số sách : ${listSach.length}`}
       />
       <Table
         dataSource={listSach.map((item, index) => ({
@@ -186,6 +188,14 @@ function Book() {
             onClick: (event) => onClickRow(record), // click row
           };
         }}
+      />
+      <ModalAddBook
+        ref={addRef}
+        // onOK={(roomBookShelf, value) => {
+        //   handleAddBookShelf(roomBookShelf, value);
+        // }}
+        // onEdit={(item, name, value) => handleEdit(item, name, value)}
+        // loading={loadingAdd}
       />
     </div>
   );

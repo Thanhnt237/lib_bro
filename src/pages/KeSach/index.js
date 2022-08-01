@@ -1,7 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Row, Col, Button, Table, Space, Popconfirm, Tooltip } from "antd";
+import {
+  Row,
+  Col,
+  Button,
+  Table,
+  Space,
+  Popconfirm,
+  Tooltip,
+  notification,
+} from "antd";
 import styles from "./style.module.scss";
-import { common_post } from "../../helpers";
+import { common_post, exportToCSV } from "../../helpers";
 import { apis } from "../../constants";
 import TopHeader from "../../components/TopHeader";
 import { DeleteOutlined, EditFilled } from "@ant-design/icons";
@@ -13,10 +22,11 @@ function KeSach() {
   const [loadingAdd, setLoadingAdd] = useState(false);
   const addRef = useRef();
 
-  async function getKeSach() {
+  async function getKeSach(search_string = "") {
     try {
-      console.log("zxc");
-      const response = await common_post(apis.get_ke_sach, {});
+      const response = await common_post(apis.get_ke_sach, {
+        search_string: search_string,
+      });
       if (response && response.status === "OK") {
         setListKeSach(response.result);
       }
@@ -38,6 +48,7 @@ function KeSach() {
       const response = await common_post(apis.edit_ke_sach, dataRequest);
       if (response && response.status === "OK") {
         getKeSach();
+        notification.success({ message: "Sửa kệ sách thành công!" });
         setLoadingAdd(false);
         addRef.current.closeModal();
       }
@@ -58,9 +69,13 @@ function KeSach() {
         ],
       };
       const response = await common_post(apis.them_ke_sach, dataRequest);
+      if (response && response.status === "KO")
+        notification.error({ message: "Thêm kệ sách thất bại" });
+
       if (response && response.status === "OK") {
         getKeSach();
         setLoadingAdd(false);
+        notification.success({ message: "Thêm kệ sách thành công" });
         addRef.current.closeModal();
       }
     } catch (error) {
@@ -76,7 +91,11 @@ function KeSach() {
         TRANG_THAI: 0,
       };
       const response = await common_post(apis.edit_ke_sach, dataRequest);
+      if (response && response.status === "KO") {
+        notification.success({ message: "Xóa kệ sách thất bại" });
+      }
       if (response && response.status === "OK") {
+        notification.success({ message: "Xóa kệ sách thành công" });
         getKeSach();
       }
     } catch (error) {
@@ -160,8 +179,8 @@ function KeSach() {
       <TopHeader
         title="Kệ Sách"
         onAdd={() => addRef.current.openModal()}
-        onChangeSearch={(txt) => console.log(txt)}
-        totalText={listKeSach?.length}
+        onChangeSearch={(txt) => getKeSach(txt)}
+        totalText={`Tổng số Kệ Sách : ${listKeSach.length}`}
       />
       <Table
         dataSource={listKeSach.map((item, index) => ({

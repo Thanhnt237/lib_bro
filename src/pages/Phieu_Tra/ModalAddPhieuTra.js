@@ -115,7 +115,7 @@ function ModalAddPhieuTra({ onOK, loading = false, onEdit }, ref) {
         treeData={listBook.map((c) => {
           return {
             value: c.ID,
-            title: c.TEN_KE_SACH,
+            title: c.TEN_SACH,
           };
         })}
       ></TreeSelect>

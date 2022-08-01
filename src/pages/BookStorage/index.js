@@ -1,6 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import styles from "./style.module.scss";
-import { Row, Col, Button, Table, Space, Popconfirm, Tooltip, notification } from "antd";
+import {
+  Row,
+  Col,
+  Button,
+  Table,
+  Space,
+  Popconfirm,
+  Tooltip,
+  notification,
+} from "antd";
 import { common_post } from "../../helpers";
 import { apis } from "../../constants";
 import TopHeader from "../../components/TopHeader";
@@ -21,7 +30,11 @@ function BookStorage() {
   async function handleGetBookStorage() {
     try {
       let response = await common_post(apis.get_book_storage, {});
-      if (response.status === "OK" && response.result && response.result.length) {
+      if (
+        response.status === "OK" &&
+        response.result &&
+        response.result.length
+      ) {
         setbookStorage(response.result);
       }
     } catch (error) {}
@@ -35,9 +48,11 @@ function BookStorage() {
     try {
       console.log(body);
       let response = await common_post(apis.add_book_storage, body);
-      if (response.status === "KO") notification.error({ message: "Thêm mới thất bại" });
+      if (response.status === "KO")
+        notification.error({ message: "Thêm mới thất bại" });
       else {
         handleGetBookStorage();
+        notification.success({ message: "Thêm kho sách thành công" });
         storageRef.current.closeModal();
       }
     } catch (error) {}
@@ -78,7 +93,7 @@ function BookStorage() {
         title="Kho sách"
         onAdd={() => storageRef.current.openModal()}
         onChangeSearch={(txt) => console.log(txt)}
-        totalText={bookStorage?.length}
+        totalText={`${bookStorage.length}`}
       />
       <Table
         dataSource={bookStorage.map((item, index) => ({

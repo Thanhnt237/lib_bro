@@ -1,5 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Row, Col, Button, Table, Space, Popconfirm, Tooltip } from "antd";
+import {
+  Row,
+  Col,
+  Button,
+  Table,
+  Space,
+  Popconfirm,
+  Tooltip,
+  notification,
+} from "antd";
 import styles from "./style.module.scss";
 import { common_post } from "../../helpers";
 import { apis } from "../../constants";
@@ -26,9 +35,13 @@ function Author() {
         ],
       };
       const response = await common_post(apis.add_tac_gia, dataRequest);
+      if (response && response.status === "KO") {
+        notification.success({ message: "Thêm tác giả thất bại" });
+      }
       if (response && response.status === "OK") {
         getAuthor();
         setLoadingAdd(false);
+        notification.success({ message: "Thêm tác giả thành công" });
         addRef.current.closeModal();
       }
     } catch (error) {
@@ -43,9 +56,13 @@ function Author() {
         TEN_TAC_GIA: name,
       };
       const response = await common_post(apis.edit_tac_gia, dataRequest);
+      if (response && response.status === "KO") {
+        notification.success({ message: "Sửa tác giả thất bại" });
+      }
       if (response && response.status === "OK") {
         getAuthor();
         setLoadingAdd(false);
+        notification.success({ message: "Sửa tác giả thành công" });
         addRef.current.closeModal();
       }
     } catch (error) {
@@ -59,7 +76,11 @@ function Author() {
         TRANG_THAI: 0,
       };
       const response = await common_post(apis.edit_tac_gia, dataRequest);
+      if (response && response.status === "KO") {
+        notification.success({ message: "Xóa tác giả thất bại" });
+      }
       if (response && response.status === "OK") {
+        notification.success({ message: "Xóa tác giả thành công" });
         getAuthor();
       }
     } catch (error) {
@@ -146,8 +167,8 @@ function Author() {
       <TopHeader
         title="Tác Giả"
         onAdd={() => addRef.current.openModal()}
-        // onChangeSearch={(txt) => getListRoom(txt)}
-        totalText={listAuthor?.length}
+        onChangeSearch={(txt) => getAuthor(txt)}
+        totalText={`Số tác giả : ${listAuthor.length}`}
       />
       <Table
         dataSource={listAuthor.map((item, index) => ({
