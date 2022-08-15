@@ -41,58 +41,58 @@ function Login() {
   }
 
   return (
-    <Row>
-      <Col span={14}>
-        <div style={{ height: "calc(100vh)" }}>
-          <img
-            src={imgBachKhoa}
-            alt=""
-            style={{ height: "100%", width: "100%", objectFit: "cover" }}
-          />
-        </div>
-      </Col>
-      <Col span={10}>
-        <div className={styles.body_right}>
-          <h1 style={{ textAlign: "center", fontSize: 40 }}>Đăng nhập</h1>
-          <Form onFinish={onSubmitForm} layout="vertical" style={{ minWidth: "430px" }} form={form}>
-            <Form.Item
-              label="Tên đăng nhập"
-              name={fieldName.username}
-              rules={[
-                {
-                  required: true,
-                  message: "Hãy nhập tên đăng nhập",
-                },
-              ]}
-            >
-              <Input className={styles.input} />
-            </Form.Item>
-            <Form.Item
-              label="Mật khẩu"
-              name={fieldName.password}
-              rules={[
-                {
-                  required: true,
-                  message: "Hãy nhập mật khẩu",
-                },
-              ]}
-            >
-              <Input.Password className={styles.input} />
-            </Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              style={{ marginTop: 10 }}
-              block
-              className={styles.button}
-              // loading={loadingLogin}
-            >
-              Đăng nhập
-            </Button>
-          </Form>
-        </div>
-      </Col>
-    </Row>
+      <Row>
+        <Col span={14}>
+          <div style={{ height: "calc(100vh)" }}>
+            <img
+                src={imgBachKhoa}
+                alt=""
+                style={{ height: "100%", width: "100%", objectFit: "cover" }}
+            />
+          </div>
+        </Col>
+        <Col span={10}>
+          <div className={styles.body_right}>
+            <h1 style={{ textAlign: "center", fontSize: 40 }}>Đăng nhập</h1>
+            <Form onFinish={onSubmitForm} layout="vertical" style={{ minWidth: "430px" }} form={form}>
+              <Form.Item
+                  label="Tên đăng nhập"
+                  name={fieldName.username}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Hãy nhập tên đăng nhập",
+                    },
+                  ]}
+              >
+                <Input className={styles.input} />
+              </Form.Item>
+              <Form.Item
+                  label="Mật khẩu"
+                  name={fieldName.password}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Hãy nhập mật khẩu",
+                    },
+                  ]}
+              >
+                <Input.Password className={styles.input} />
+              </Form.Item>
+              <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ marginTop: 10 }}
+                  block
+                  className={styles.button}
+                  // loading={loadingLogin}
+              >
+                Đăng nhập
+              </Button>
+            </Form>
+          </div>
+        </Col>
+      </Row>
   );
 }
 

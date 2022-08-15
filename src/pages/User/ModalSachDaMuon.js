@@ -4,6 +4,7 @@ import { common_post } from "../../helpers";
 import { apis } from "../../constants";
 import SwitchCustom from "../../components/SwitchCustom";
 import {DeleteOutlined, SearchOutlined} from "@ant-design/icons";
+import moment from "moment";
 const { TreeNode } = TreeSelect;
 
 function ModalSachDaMuon({ onOK, loading = false, onEdit }, ref) {
@@ -51,6 +52,11 @@ function ModalSachDaMuon({ onOK, loading = false, onEdit }, ref) {
             title: "STT",
             dataIndex: "STT",
         },
+        ,
+        {
+            title: "Phiếu",
+            dataIndex: "TEN_PHIEU"
+        },
         {
             title: "Tên Sách",
             dataIndex: "TEN_SACH",
@@ -58,6 +64,7 @@ function ModalSachDaMuon({ onOK, loading = false, onEdit }, ref) {
         {
             title: "Ngày mượn",
             dataIndex: "NGAY",
+            render: (data) => moment(data, "YYYYMMDD").format("DD/MM/YYYY"),
         }
     ];
 

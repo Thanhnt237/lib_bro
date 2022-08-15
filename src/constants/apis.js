@@ -1,6 +1,6 @@
 export const apis = {
-  // baseURL: "http://localhost:8686/",
-  baseURL: "https://99e5-123-16-146-8.ap.ngrok.io",
+  // baseURL: "https://lib-managerment-system-server.herokuapp.com/",
+  baseURL: "http://localhost:8686/",
   login: "api/public/nguoiDung/dangNhap",
   refresh_token: "api/public/token/refreshToken",
   get_list_reading_room: "api/resources/phongDoc/layDSPhongDoc",
@@ -29,4 +29,7 @@ export const apis = {
   thongKeLuotTraTheoNgay: "/api/resources/dashboard/thongKeLuotTraTheoNgay",
   thongKeNhapSachTheoNgay: "/api/resources/dashboard/thongKeNhapSachTheoNgay",
   get_sach_nguoi_dung: "/api/resources/sach/laySachNguoiDung",
+  get_category: "/api/resources/danhmuc/layDsDanhMuc",
+  add_category: "/api/resources/danhmuc/themDanhMuc",
+  update_category: "/api/resources/danhmuc/suaDanhMuc",
 };

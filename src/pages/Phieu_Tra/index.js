@@ -169,11 +169,11 @@ function Phieu_Tra() {
     {
       title: "STT",
       dataIndex: "STT",
+      render: (data, record, index) => index + 1,
     },
     {
       title: "Tên phiếu",
       dataIndex: "TEN_PHIEU",
-      render: (data, record, index) => index + 1,
     },
     {
       title: "Loại phiếu",

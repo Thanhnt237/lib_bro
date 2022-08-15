@@ -9,11 +9,11 @@ import "./assets/main.scss";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <Provider store={store}>
-    <AppConfig>
-      <AppRouter />
-    </AppConfig>
-  </Provider>
+    <Provider store={store} >
+      <AppConfig>
+        <AppRouter />
+      </AppConfig>
+    </Provider>
 );
 
 reportWebVitals();

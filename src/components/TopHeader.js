@@ -1,8 +1,8 @@
 import React from "react";
-import { Row, Col, Button, Input, Space, Tag } from "antd";
+import { Row, Col, Button, Input, Space, Tag, Select } from "antd";
 import { ExportOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
-
-function TopHeader({ title, onAdd, onChangeSearch, totalText, onExportExcel }) {
+const { Option } = Select
+function TopHeader({ title, onAdd, onChangeSearch, totalText, onExportExcel, onFilter, optionFilter }) {
     return (
         <Row
             justify="space-between"
@@ -27,6 +27,16 @@ function TopHeader({ title, onAdd, onChangeSearch, totalText, onExportExcel }) {
 
             <Col>
                 <Space size={20}>
+                    {onFilter && (
+                        <div>
+                            <span>Thể loại: </span>
+                            <Select style={{width: "250px"}} type="primary" onSelect={onFilter} icon={<SearchOutlined />}>
+                                {optionFilter?.map((item, i) => (
+                                    <Option key={i.toString(36) + i} value={item.ID}> {item.TEN_DANH_MUC} </Option>
+                                ))}
+                            </Select>
+                        </div>
+                    )}
                     {onExportExcel && (
                         <Button type="primary" onClick={onExportExcel} icon={<ExportOutlined />}>
                             Xuất excel

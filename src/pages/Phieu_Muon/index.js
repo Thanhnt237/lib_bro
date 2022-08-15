@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
-  Row,
-  Col,
   Button,
   Table,
   Space,
@@ -13,10 +11,8 @@ import styles from "./style.module.scss";
 import { common_post, exportToCSV } from "../../helpers";
 import { apis } from "../../constants";
 import TopHeader from "../../components/TopHeader";
-import { DeleteOutlined, EditFilled, PrinterOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PrinterOutlined } from "@ant-design/icons";
 import ModalAddPhieuMuon from "./ModalAddPhieuMuon";
-import ColumnGroup from "antd/lib/table/ColumnGroup";
-import { data } from "../../assets/data";
 import moment from "moment";
 import Printd from "printd";
 import { templates } from "../../assets/templates";
@@ -50,8 +46,6 @@ function Phieu_Muon() {
   }
 
   async function handleAddPhieuMuon(Book, User) {
-    console.log(Book);
-    console.log(User);
     setLoadingAdd(true);
     try {
       let dataRequest = {
@@ -64,6 +58,7 @@ function Phieu_Muon() {
         setLoadingAdd(false);
         notification.success({ message: "Thành công" });
         addRef.current.closeModal();
+        getPhieu()
       }
     } catch (error) {
       console.log(error);

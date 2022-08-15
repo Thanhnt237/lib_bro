@@ -17,50 +17,50 @@ export const PublicRoute = ({ component: Component, ...rest }) => {
   }
 
   if (isAuth && user && localUser) {
-    // setTimeout(() => {
-    //   history.push(paths.room_reading);
-    // }, 5000);
+    setTimeout(() => {
+      history.push(paths.room_reading);
+    }, 5000);
 
     return (
-      <div>
-        <div
-          style={{
-            backgroundImage: `url(${preload})`,
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-            width: "100vw",
-            height: "100vh",
-          }}
-        ></div>
+        <div>
+          <div
+              style={{
+                backgroundImage: `url(${preload})`,
+                backgroundPosition: "center",
+                backgroundSize: "cover",
+                width: "100vw",
+                height: "100vh",
+              }}
+          ></div>
 
-        <div
-          style={{
-            top: "0",
-            left: "0",
-            width: "100vw",
-            height: "100vh",
-            position: "fixed",
-            backgroundColor: "#00000099",
-            display: "flex",
-            "align-items": "center",
-            "justify-content": "center",
-            color: "#337AB7",
-            "-webkit-text-stroke": "2px black",
-            "font-family": "sans",
-            "font-size": "4vw",
-          }}
-        >
-          <h1 className="pre-loading-text">ONE LOVE ONE FUTURE</h1>
+          <div
+              style={{
+                top: "0",
+                left: "0",
+                width: "100vw",
+                height: "100vh",
+                position: "fixed",
+                backgroundColor: "#00000099",
+                display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#337AB7",
+                  WebkitTextStroke: "2px black",
+                  fontFamily: "sans",
+                  fontSize: "4vw",
+              }}
+          >
+            <h1 className="pre-loading-text">ONE LOVE ONE FUTURE</h1>
+          </div>
         </div>
-      </div>
     );
   }
 
   return (
-    <Route
-      {...rest}
-      render={(props) => (isAuth ? <Redirect to={paths.dashboard} /> : <Component {...props} />)}
-    />
+      <Route
+          {...rest}
+          render={(props) => (isAuth ? <Redirect to={paths.dashboard} /> : <Component {...props} />)}
+      />
   );
 };
 
@@ -76,9 +76,9 @@ export const PrivateRoute = ({ component: Component, ...rest }) => {
   }
 
   return (
-    <Route
-      {...rest}
-      render={(props) => (isAuth ? <Component {...props} /> : <Redirect to={paths.login} />)}
-    />
+      <Route
+          {...rest}
+          render={(props) => (isAuth ? <Component {...props} /> : <Redirect to={paths.login} />)}
+      />
   );
 };

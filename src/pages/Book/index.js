@@ -10,12 +10,14 @@ import ModalAddBook from "./ModalAddBook";
 function Book() {
   const [listSach, setListSach] = useState([]);
   const [loadingAdd, setLoadingAdd] = useState(false);
+  const [listCategory, setListCategory] = useState([])
   const addRef = useRef();
 
-  async function getSach(search_string = "") {
+  async function getSach(search_string = "", DANH_MUC_ID="") {
     try {
       const response = await common_post(apis.get_sach, {
         search_string: search_string,
+        DANH_MUC_ID: DANH_MUC_ID
       });
       if (response && response.status === "OK") {
         setListSach(response.result);
@@ -24,21 +26,23 @@ function Book() {
       throw error;
     }
   }
-  async function handleAddBook(Book, value, author) {
-    console.log(Book);
-    console.log(value);
-    console.log(author);
+  async function handleGetListCategory() {
+    try {
+      const response = await common_post(apis.get_category, {});
+      if (response && response.status === "OK") {
+        setListCategory(response.result);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+  async function handleAddBook(values) {
     setLoadingAdd(true);
     try {
       let dataRequest = {
-        data: [
-          {
-            TEN_SACH: Book,
-            KE_SACH_ID: value,
-            TAC_GIA_ID: author,
-          },
-        ],
+        data: [values],
       };
+      console.log(values)
       const response = await common_post(apis.add_sach, dataRequest);
       if (response && response.status === "OK") {
         getSach();
@@ -53,11 +57,9 @@ function Book() {
     setLoadingAdd(true);
   }
   function onClickRow(item) {
-    console.log(item);
     addRef.current.openModal(item);
   }
   async function handleDelete(item) {
-    console.log(item);
     try {
       let dataRequest = {
         ID: item.ID,
@@ -71,18 +73,11 @@ function Book() {
       console.log(error);
     }
   }
-  async function handleEdit(item, name, value) {
-    console.log(item);
-    console.log(name);
-    console.log(value);
+  async function handleEdit(values) {
+    console.log(values)
     setLoadingAdd(true);
     try {
-      let dataRequest = {
-        ID: item.ID,
-        TEN_SACH: name,
-        KE_SACH_ID: value,
-      };
-      const response = await common_post(apis.edit_sach, dataRequest);
+      const response = await common_post(apis.edit_sach, values);
       if (response && response.status === "OK") {
         getSach();
         setLoadingAdd(false);
@@ -94,6 +89,7 @@ function Book() {
   }
   useEffect(() => {
     getSach();
+    handleGetListCategory();
   }, []);
   const columns = [
     {
@@ -117,31 +113,17 @@ function Book() {
       dataIndex: "TEN_TAC_GIA",
     },
     {
+      title: "Danh mục",
+      dataIndex: "TEN_DANH_MUC",
+    },
+    {
+      title: "Giá cho mượn",
+      dataIndex: "GIA_CHO_MUON",
+    },
+    {
       title: "",
-      // render: (record) => (
-      //   <Dropdown
-      //     overlay={
-      //       <Menu>
-      //         <Menu.Item icon={<EditOutlined />}>Chỉnh sửa</Menu.Item>
-      //         <Menu.Item icon={<DeleteOutlined />}>Xóa</Menu.Item>
-      //       </Menu>
-      //     }
-      //   >
-      //     <Button icon={<EllipsisOutlined />} type="text"></Button>
-      //   </Dropdown>
-      // ),
       render: (record) => (
         <Space>
-          {/* {isAtEditPage && (
-            <Tooltip title="Chỉnh sửa">
-              <Button
-                type="primary"
-                icon={<EditFilled />}
-                onClick={() => handleEdit(record)}
-              ></Button>
-            </Tooltip>
-          )} */}
-
           <Popconfirm
             title="Bạn có chắc chắn muốn xóa phòng này không?"
             onConfirm={(e) => {
@@ -165,6 +147,10 @@ function Book() {
     },
   ];
 
+  async function handleOnFilter(value){
+    getSach("",value)
+  }
+
   return (
     <div className={styles.container}>
       <TopHeader
@@ -172,6 +158,8 @@ function Book() {
         onAdd={() => addRef.current.openModal()}
         onChangeSearch={(txt) => getSach(txt)}
         totalText={`Tổng số sách : ${listSach.length}`}
+        onFilter={handleOnFilter}
+        optionFilter={listCategory}
       />
       <Table
         dataSource={listSach.map((item, index) => ({
@@ -190,12 +178,12 @@ function Book() {
         }}
       />
       <ModalAddBook
-        ref={addRef}
-        // onOK={(roomBookShelf, value) => {
-        //   handleAddBookShelf(roomBookShelf, value);
-        // }}
-        // onEdit={(item, name, value) => handleEdit(item, name, value)}
-        // loading={loadingAdd}
+          ref={addRef}
+          onOK={(values => {
+            handleAddBook(values);
+          })}
+          onEdit={(values) => handleEdit(values)}
+          loading={loadingAdd}
       />
     </div>
   );

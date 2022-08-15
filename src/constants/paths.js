@@ -9,7 +9,8 @@ export const paths = {
   book: "/sach",
   phieu_muon: "/phieu-muon",
   phieu_tra: "/phieu-tra",
-  book_storage: "/kho-sach"
+  book_storage: "/kho-sach",
+  category: "/category",
 };
 
 export const titlePath = {
@@ -24,4 +25,5 @@ export const titlePath = {
   [paths.phieu_muon]: "Phiếu Trả Sách",
   [paths.book_storage]: "Kho sách",
   [paths.home]: "Trang chủ",
+  [paths.category]: "Danh mục sách",
 };

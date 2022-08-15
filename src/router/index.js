@@ -14,6 +14,7 @@ import Phieu_Tra from "../pages/Phieu_Tra";
 import BookStorage from "../pages/BookStorage";
 import { PrivateRoute, PublicRoute } from "./ConfigRoutes";
 import Dashboard from "../pages/Dashboard";
+import Category from "../pages/Category";
 
 export const AppRouter = () => {
   return (
@@ -34,6 +35,7 @@ export const AppRouter = () => {
             <PrivateRoute exact path={paths.phieu_muon} component={Phieu_Muon} />
             <PrivateRoute exact path={paths.phieu_tra} component={Phieu_Tra} />
             <PrivateRoute exact path={paths.book_storage} component={BookStorage} />
+            <PrivateRoute exact path={paths.category} component={Category} />
 
             <Redirect exact from={paths.home} to={paths.dashboard} />
           </Switch>

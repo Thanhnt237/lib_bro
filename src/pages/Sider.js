@@ -26,6 +26,7 @@ const items = [
     getItem("Phòng đọc", paths.room_reading, <DesktopOutlined />),
     getItem("Kệ Sách", paths.bookshelf, <AccountBookOutlined />),
     getItem("Tác Giả", paths.author, <UserSwitchOutlined />),
+    getItem("Danh mục sách", paths.category),
   ]),
   getItem("Người dùng", paths.user, <UserOutlined />),
 

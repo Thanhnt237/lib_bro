@@ -36,24 +36,15 @@ function ModalAddPhieuTra({ onOK, loading = false, onEdit }, ref) {
   }
 
   const onChangeBookTree = async (newValue) => {
-    // console.log(newValue);
-    setNewBook(newValue);
-    // await handleGetListPhongDoc(newValue);
-    // let response = await handleGetListKeSach(newValue);
-    // console.log(response);
-    // if (response.status === "OK") {
-    //   setPhongDoc(response.result[0]);
-    // }
+    setNewBook(newValue)
   };
 
   const onChangeUserTree = async (newValue) => {
-    // console.log(newValue)
     setNewUser(newValue);
   };
-  // console.log(listphongDoc[0]);
+
   useEffect(() => {
-    // handleGetBook()
-    // handleGetUser()
+
   }, []);
 
   useImperativeHandle(

@@ -1,71 +1,101 @@
-import { Input, Modal, notification, TreeSelect } from "antd";
+import { Input, Modal, notification, TreeSelect, Form, Select } from "antd";
 import React, { useState, useImperativeHandle, useEffect } from "react";
 import { common_post } from "../../helpers";
 import { apis } from "../../constants";
-const { TreeNode } = TreeSelect;
+const { Option } = Select;
 
 function ModalAddBook({ onOK, loading = false, onEdit }, ref) {
   const [visible, setVisible] = useState(false);
-  const [name, setName] = useState("");
-  const [current, setCurrent] = useState();
-  const [listKeSach, setListKeSach] = useState([]);
-  const [listphongDoc, setListPhongDoc] = useState("");
-  const [value, setValue] = useState(undefined);
-  const [listTacGia, setListTacGia] = useState([]);
-  const [author, setAuthor] = useState(undefined);
-  async function handleGetListKeSach(KE_SACH_ID = "") {
+  const [current, setCurrent] = useState(false);
+  const [listBookShelf, setListBookShelf] = useState([]);
+  const [listRoom, setListRoom] = useState({});
+  // const [value, setValue] = useState(undefined);
+  const [listCategory, setListCategory] = useState([])
+  const [listAuthor, setListAuthor] = useState([])
+  const [form] = Form.useForm();
+
+  async function handleGetListBookShelf(KE_SACH_ID = "") {
     try {
       const response = await common_post(apis.get_ke_sach, {
         KE_SACH_ID: KE_SACH_ID,
       });
       if (response && response.status === "OK") {
-        setListKeSach(response.result);
+        setListBookShelf(response.result);
       }
     } catch (error) {
       throw error;
     }
   }
-  async function handleGetListTacGia() {
+  async function handleGetListAuthor() {
     try {
       const response = await common_post(apis.get_tac_gia, {});
       if (response && response.status === "OK") {
-        setListTacGia(response.result);
+        setListAuthor(response.result);
       }
     } catch (error) {
       throw error;
     }
   }
-  async function handleGetListPhongDoc(KE_SACH_ID) {
+  async function handleGetListCategory() {
+    try {
+      const response = await common_post(apis.get_category, {});
+      if (response && response.status === "OK") {
+        setListCategory(response.result);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+  async function handleGetListRoom(KE_SACH_ID) {
     try {
       const response = await common_post(apis.lay_phong_doc_theo_ke_sach, {
         KE_SACH_ID: KE_SACH_ID,
       });
       if (response && response.status === "OK") {
-        setListPhongDoc(response.result[0].TEN_PHONG_DOC);
-        // console.log(response);
+        setListRoom(response.result[0]);
       }
     } catch (error) {
       throw error;
     }
   }
 
-  const onChange = async (newValue) => {
-    // console.log(newValue);
-    setValue(newValue);
-    await handleGetListPhongDoc(newValue);
-    // let response = await handleGetListKeSach(newValue);
-    // console.log(response);
-    // if (response.status === "OK") {
-    //   setPhongDoc(response.result[0]);
-    // }
+  const onFinish = (values) => {
+    console.log(current)
+    if(current){
+      console.log("edit")
+      onEdit(values)
+    }else{
+      console.log("add")
+      onOK(values)
+    }
   };
-  const onChangeAuthor = async (newValue) => {
-    setAuthor(newValue);
+
+  const onFill = (item) => {
+    let formField = []
+    for(let [keys, values] of Object.entries(item)) {
+      formField.push({
+        name: keys,
+        value: values
+      })
+    }
+    console.log(formField)
+    form.setFields(formField)
   };
-  // console.log(listphongDoc[0]);
+
+
+  const onChangeBookShelf = async (newValue) => {
+    await handleGetListRoom(newValue);
+    form.setFields([{
+      name: "TEN_PHONG_DOC",
+      value: listRoom.TEN_PHONG_DOC
+    },{
+      name: "PHONG_DOC_ID",
+      value: listRoom.ID
+    }])
+  };
+
   useEffect(() => {
-    handleGetListKeSach();
-    handleGetListTacGia();
+
   }, []);
 
   useImperativeHandle(
@@ -73,10 +103,14 @@ function ModalAddBook({ onOK, loading = false, onEdit }, ref) {
     () => {
       return {
         openModal(item) {
-          if (item) {
-            setCurrent(item);
-            setName(item.TEN_SACH);
+          if(item){
+            onFill(item)
+            setCurrent(true)
           }
+          handleGetListBookShelf();
+          handleGetListAuthor();
+          handleGetListCategory();
+          console.log(listAuthor)
           setVisible(true);
         },
         closeModal() {
@@ -88,21 +122,13 @@ function ModalAddBook({ onOK, loading = false, onEdit }, ref) {
   );
 
   function handleClose() {
-    setName("");
-    current && setCurrent();
     setVisible(false);
+    setCurrent(false)
+    form.resetFields();
   }
 
   function onPressOk() {
-    if (name === "") {
-      notification.warning({ message: "Vui lòng điền tên sách" });
-      return;
-    }
-    if (current) {
-      onEdit(current, name, value);
-    } else {
-      onOK(name, value, author);
-    }
+    form.submit()
   }
   // console.log(value);
   return (
@@ -113,67 +139,109 @@ function ModalAddBook({ onOK, loading = false, onEdit }, ref) {
       onOk={onPressOk}
       confirmLoading={loading}
     >
-      <span>Tên Sách</span>
-      <Input
-        onChange={(e) => setName(e.target.value)}
-        value={name}
-        placeholder="Nhập tên kệ sách"
-        style={{ marginTop: "10px" }}
-      />
+      <Form
+          layout={"vertical"}
+          form={form}
+          name="control-hooks"
+          onFinish={onFinish}>
 
-      <span>Tên Kệ Sách</span>
-      <TreeSelect
-        showSearch
-        style={{
-          width: "100%",
-        }}
-        value={value}
-        dropdownStyle={{
-          maxHeight: 400,
-          overflow: "auto",
-        }}
-        placeholder={value ? value : "Chọn Kệ sách"}
-        allowClear
-        // treeDefaultExpandAll
-        onChange={onChange}
-        treeData={listKeSach.map((c) => {
-          return {
-            value: c.ID,
-            title: c.TEN_KE_SACH,
-          };
-        })}
-      ></TreeSelect>
-      <span>Phòng đọc</span>
-      <Input
-          disabled
-          // onChange={(e) => setName(e.target.value)}
-          value={listphongDoc}
-          placeholder="Phòng đọc"
-          style={{ marginTop: "10px" }}
-      />
-      <span>Tác giả</span>
-      <TreeSelect
-        showSearch
-        style={{
-          width: "100%",
-        }}
-        value={author}
-        dropdownStyle={{
-          maxHeight: 400,
-          overflow: "auto",
-        }}
-        placeholder={author ? author : "Chọn Tác Giả"}
-        allowClear
-        // loadData = {handleGetListTacGia()}
-        // treeDefaultExpandAll
-        onChange={onChangeAuthor}
-        treeData={listTacGia.map((c) => {
-          return {
-            value: c.ID,
-            title: c.TEN_TAC_GIA,
-          };
-        })}
-      ></TreeSelect>
+        <Form.Item
+            hidden
+            name="ID"
+            label="Sach ID">
+          <Input
+          />
+        </Form.Item>
+
+        <Form.Item
+            name="TEN_SACH"
+            label="Tên sách"
+            rules={[{ required: true }]}>
+          <Input
+              placeholder="Nhập tên sách"
+              style={{ marginTop: "10px" }}
+          />
+        </Form.Item>
+
+        <Form.Item
+            name="KE_SACH_ID"
+            label="Kệ sách"
+            rules={[{ required: true }]}>
+          <Select
+              placeholder="Chọn kệ sách"
+              onChange={onChangeBookShelf}
+              allowClear
+          >
+            {listBookShelf?.map((item, i) => (
+                <Option key={i.toString(36) + i} value={item.ID}> {item.TEN_KE_SACH} </Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          hidden
+          name="PHONG_DOC_ID"
+          label="Phòng đọc"
+        >
+          <Input
+              disabled
+              placeholder="Phòng đọc ID"
+              style={{ marginTop: "10px" }}
+          />
+        </Form.Item>
+
+        <Form.Item
+            name="TEN_PHONG_DOC"
+            label="Phòng đọc"
+        >
+          <Input
+              disabled
+              placeholder="Phòng đọc"
+              style={{ marginTop: "10px" }}
+          />
+        </Form.Item>
+
+        <Form.Item
+            name="TAC_GIA_ID"
+            label="Tên tác giả"
+            rules={[{ required: true }]}>
+          <Select
+              placeholder="Chọn tác giả"
+              // onChange={onChange}
+              allowClear
+          >
+            {listAuthor?.map((item, i) => (
+                <Option key={i.toString(36) + i} value={item.ID}> {item.TEN_TAC_GIA} </Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+            name="DANH_MUC_ID"
+            label="Danh mục"
+            rules={[{ required: true }]}>
+          <Select
+              placeholder="Chọn danh mục"
+              // onChange={onChange}
+              allowClear
+          >
+            {listCategory?.map((item, i) => (
+                <Option key={i.toString(36) + i} value={item.ID}> {item.TEN_DANH_MUC} </Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+            name="GIA_CHO_MUON"
+            label="Giá cho mượn"
+            rules={[{ required: true }]}>
+          <Input
+              placeholder="Nhập giá"
+              style={{ marginTop: "10px" }}
+          />
+        </Form.Item>
+
+      </Form>
     </Modal>
   );
 }
