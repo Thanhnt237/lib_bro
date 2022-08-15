@@ -1,12 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import {
-  Button,
-  Table,
-  Space,
-  Popconfirm,
-  Tooltip,
-  notification,
-} from "antd";
+import { Button, Table, Space, Popconfirm, Tooltip, notification } from "antd";
 import styles from "./style.module.scss";
 import { common_post, exportToCSV } from "../../helpers";
 import { apis } from "../../constants";
@@ -58,8 +51,10 @@ function Phieu_Muon() {
         setLoadingAdd(false);
         notification.success({ message: "Thành công" });
         addRef.current.closeModal();
-        getPhieu()
+        getPhieu();
+        return true;
       }
+      notification.error({ message: "Thêm phiếu mượn thất bại" });
     } catch (error) {
       console.log(error);
     }
@@ -94,6 +89,9 @@ function Phieu_Muon() {
           <tr>
             <td>${index + 1}</td>
             <td>${row_data.TEN_SACH}</td>
+            <td>${row_data.SO_LUONG}</td>
+            <td>${row_data.DON_GIA}</td>
+            <td>${row_data.SO_LUONG * row_data.DON_GIA}</td>
           </tr>
         `)
         );
@@ -291,11 +289,7 @@ function Phieu_Muon() {
         // onEdit={(item, name, value) => handleEdit(item, name, value)}
         loading={loadingAdd}
       />
-      <div
-        ref={printRef}
-        dangerouslySetInnerHTML={{ __html: html }}
-        className="print-src"
-      />
+      <div ref={printRef} dangerouslySetInnerHTML={{ __html: html }} className="print-src" />
     </div>
   );
 }

@@ -1,26 +1,44 @@
-import {Input, Modal, notification, TreeSelect, Form, Row, Col, Select, InputNumber, Button, Radio, Space} from "antd";
-import React, { useState, useImperativeHandle, useEffect } from "react";
+import { Input, Modal, Form, Row, Col, InputNumber, Button, Radio, Space, Table } from "antd";
+import React, { useState, useImperativeHandle } from "react";
 import { common_post } from "../../helpers";
 import { keys, apis } from "../../constants";
+import { Select } from "../../components";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
-import {PlusOutlined} from "@ant-design/icons";
-const { Option } = Select;
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { useMemo } from "react";
+import { useEffect } from "react";
+import { nanoid } from "@reduxjs/toolkit";
 
 const initialOptions = {
   "client-id": keys.Paypal_Sandbox_cli,
   currency: "USD",
-  intent: "capture"
+  intent: "capture",
 };
 
 function ModalAddPhieuMuon({ onOK, loading = false, onEdit }, ref) {
   const [listBook, setListBook] = useState([]);
   const [user, setListUser] = useState([]);
   const [visible, setVisible] = useState(false);
-  const [current, setCurrent] = useState()
-  const [form] = Form.useForm();
-  const [bookQuantity, setBookQuantity] = useState();
+  const [formNguoiMuon] = Form.useForm();
+  const [formThemSach] = Form.useForm();
   const [paymentMethod, setPaymentMethod] = useState("cod");
-  const dataSach = Form.useWatch("data", form)
+  const [selectedBooks, setSelectedBooks] = useState([]);
+  const [selectedBook, setSelectedBook] = useState();
+  const [selectedUser, setSelectedUser] = useState();
+  const [current, setCurrent] = useState();
+  const soLuong = Form.useWatch("SO_LUONG", formThemSach);
+
+  useEffect(() => {
+    if (visible && selectedBook) {
+      formThemSach.setFields([
+        { name: "DON_GIA", value: selectedBook.GIA_CHO_MUON },
+        {
+          name: "THANH_TIEN",
+          value: soLuong * selectedBook.GIA_CHO_MUON,
+        },
+      ]);
+    }
+  }, [visible, soLuong, selectedBook, formThemSach]);
 
   async function handleGetBook() {
     try {
@@ -44,42 +62,59 @@ function ModalAddPhieuMuon({ onOK, loading = false, onEdit }, ref) {
     }
   }
 
-  const onFinish = async (value) => {
-    console.log(value)
-  }
+  const onAddBook = async (values) => {
+    const order = {
+      ...values,
+      TEN_SACH: selectedBook.TEN_SACH,
+      SACH_ID: selectedBook.ID,
+      key: nanoid(),
+    };
+    setSelectedBooks((currArr) => [order, ...currArr]);
+    setSelectedBook();
+    formThemSach.resetFields();
+  };
 
-  const onFinishFailed = async () => {
-
-  }
-
-  useImperativeHandle(
-    ref,
-    () => {
-      return {
-        openModal(item) {
-          if (item) {
-            setCurrent(item);
-          }
-          setVisible(true);
-        },
-        closeModal() {
-          handleClose();
-        },
-      };
+  useImperativeHandle(ref, () => ({
+    openModal(item) {
+      if (item) {
+        setCurrent(item);
+        formNguoiMuon.setFields([
+          {
+            name: "NGUOI_MUON_ID",
+            value: item.TEN_NGUOI_MUON,
+          },
+        ]);
+        setSelectedBooks(
+          item.SACH.map((item) => ({
+            ...item,
+            key: nanoid(),
+            THANH_TIEN: item.SO_LUONG * item.DON_GIA,
+          }))
+        );
+      }
+      setVisible(true);
     },
-    []
-  );
+    closeModal() {
+      handleClose();
+    },
+  }));
 
   function handleClose() {
     setVisible(false);
+    formThemSach.resetFields();
+    formNguoiMuon.resetFields();
+    setSelectedBooks([]);
+    setSelectedBook();
+    setSelectedUser();
+    setCurrent();
   }
 
-  function onPressOk() {
-    if (current) {
-      // onEdit(current, name, value);
-    } else {
-      form.submit()
-    }
+  async function onPressOk() {
+    // console.log(selectedBooks);
+
+    const res = await onOK(selectedBooks, selectedUser.ID);
+
+    if (!!res) handleClose();
   }
 
   const handleChangePaymentMethod = (e) => {
@@ -87,153 +122,188 @@ function ModalAddPhieuMuon({ onOK, loading = false, onEdit }, ref) {
     setPaymentMethod(value);
   };
 
-  function onChangeSach(record, index){
-    let book = listBook.find(c => c.ID === record)
-    // console.log(index)
+  const handleSelectBook = (book) => {
+    setSelectedBook(book);
 
-    return console.log(dataSach)
+    formThemSach.setFields([
+      { name: "DON_GIA", value: book.GIA_CHO_MUON },
+      {
+        name: "THANH_TIEN",
+        value: soLuong * book.GIA_CHO_MUON,
+      },
+    ]);
+  };
 
-    form.setFields([{
-      name: ["data", index, "DON_GIA"],
-      value: book.GIA_CHO_MUON
-    },{
-      name: ["data", index, "THANH_TIEN"],
-      value: dataSach[index].SO_LUONG * book.GIA_CHO_MUON
-    }])
-  }
-  // console.log(value);
+  const totalPayment = useMemo(() => {
+    return selectedBooks.reduce((total, book) => (total += book.THANH_TIEN), 0);
+  }, [selectedBooks]);
+
+  const columns = [
+    {
+      title: "Sách",
+      dataIndex: "TEN_SACH",
+    },
+    {
+      title: "Số lượng",
+      dataIndex: "SO_LUONG",
+    },
+    {
+      title: "Đơn giá",
+      dataIndex: "DON_GIA",
+    },
+    {
+      title: "Thành tiền",
+      dataIndex: "THANH_TIEN",
+    },
+  ];
+
+  const handleDelete = (id) => {
+    setSelectedBooks((curr) => curr.filter((book) => book.key !== id));
+  };
+
   return (
     <Modal
       visible={visible}
       onCancel={handleClose}
-      title="Thêm mới phiếu"
+      title={!current ? "Thêm mới phiếu" : "Chi tiết phiếu"}
       onOk={onPressOk}
       confirmLoading={loading}
       width={1200}
+      footer={!current && undefined}
     >
-      <Form
-          form={form}
-          name="AddPhieuMuon"
-          layout="vertical"
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
-          autoComplete="off"
-      >
+      <Form layout="vertical" form={formNguoiMuon}>
         <Form.Item
           label="Tên người mượn"
           name="NGUOI_MUON_ID"
-          rules={[{ required: true, message: 'Vui lòng chọn người mượn!' }]}
+          rules={[{ required: true, message: "Vui lòng chọn người mượn!" }]}
         >
-          <Select
+          {!!current ? (
+            <Input readOnly />
+          ) : (
+            <Select
               placeholder="Chọn người mượn"
-              showSearch={true}
-              onDropdownVisibleChange = {open => open && handleGetUser()}
-              // onChange={}
-              allowClear
-          >
-            {user?.map((item, i) => (
-                <Option key={i.toString(36) + i} value={item.ID}> {item.TEN_NGUOI_DUNG} </Option>
-            ))}
-          </Select>
-        </Form.Item>
-
-        <Form.List name="data">
-          {(fields, { add, remove }) => (
-              <>
-                {fields.map((field, index) => (
-                    <Row key={field.key}>
-                      <Col span={7}>
-                        <Form.Item
-                            {...field}
-                            label="Sách"
-                            name={[field.name, 'SACH_ID']}
-                            rules={[{ required: true, message: 'Chọn sách' }]}
-                        >
-                          <Select
-                              placeholder="Chọn sách"
-                              onChange={(ID)=>onChangeSach(ID, index)}
-                              showSearch={true}
-                              onDropdownVisibleChange = {open => open && handleGetBook()}
-                              // onChange={}
-                              allowClear
-                          >
-                            {listBook?.map((item, i) => (
-                                <Option key={i.toString(36) + i} value={item.ID}> {item.TEN_SACH} </Option>
-                            ))}
-
-                          </Select>
-                        </Form.Item>
-                      </Col>
-                      <Col span = {1}></Col>
-                      <Col span={3}>
-                        <Form.Item
-                            {...field}
-                            label="Nhập số lượng"
-                            name={[field.name, "SO_LUONG"]}
-                            rules={[{ required: true, message: 'Nhập số lượng' }]}
-                            initialValue={1}
-                        >
-                          <InputNumber min={0} max={1000000} />
-                        </Form.Item>
-                      </Col>
-                      <Col span={3}>
-                        <Form.Item
-                            {...field}
-                            label="Đơn giá"
-                            name={[field.name, "DON_GIA"]}
-                            rules={[{ required: true, message: '' }]}
-                        >
-                          <Input disabled/>
-                        </Form.Item>
-                      </Col>
-                      <Col span={1}></Col>
-                      <Col span={3}>
-                        <Form.Item
-                            {...field}
-                            label="Thành tiền"
-                            name={[field.name, "THANH_TIEN"]}
-                            rules={[{ required: true, message: '' }]}
-                        >
-                          <Input disabled/>
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                ))}
-
-                <Form.Item>
-                  <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                    Thêm sách
-                  </Button>
-                </Form.Item>
-              </>
+              dataSource={user}
+              labelKey="TEN_NGUOI_DUNG"
+              valueKey="TEN_NGUOI_DUNG"
+              onSelect={setSelectedUser}
+              onDropdownVisibleChange={(open) => open && user.length === 0 && handleGetUser()}
+              allowClear={false}
+              disabled={current}
+            />
           )}
-        </Form.List>
+        </Form.Item>
       </Form>
 
-      <span>Tổng thanh toán: </span> <br/>
-
-      <Radio.Group
-          value={paymentMethod}
-          onChange={handleChangePaymentMethod}
+      <Form
+        form={formThemSach}
+        layout="vertical"
+        onFinish={onAddBook}
+        autoComplete="off"
+        style={current ? { visibility: "hidden", opacity: 0, position: "fixed" } : {}}
       >
-        <Space direction="vertical">
-          <Radio value="cod">Thanh toán bằng tiền mặt</Radio>
-          <Radio value="paypal">Thanh toán bằng Paypal</Radio>
-        </Space>
+        <Row gutter={10} align="bottom" wrap={false}>
+          <Col flex="300px">
+            <Form.Item
+              label="Sách"
+              name="SACH_ID"
+              rules={[{ required: true, message: "Chọn sách" }]}
+            >
+              <Select
+                placeholder="Chọn sách"
+                dataSource={listBook}
+                labelKey="TEN_SACH"
+                valueKey="TEN_SACH"
+                onSelect={handleSelectBook}
+                onDropdownVisibleChange={(open) => open && listBook.length === 0 && handleGetBook()}
+                allowClear={false}
+              />
+            </Form.Item>
+          </Col>
 
-        <div
-            style={{
-              display: paymentMethod === "paypal" ? "block" : "none",
-              marginTop: 20,
-            }}
-        >
-          <PayPalScriptProvider
-              // deferLoading={totalPrice ? true : false}
-              options={initialOptions}
-          >
-            <PayPalButtons
-                createOrder={(data, actions) => {
-                  return actions.order
+          <Col flex="auto">
+            <Form.Item
+              label="Nhập số lượng"
+              name="SO_LUONG"
+              rules={[{ required: true, message: "Nhập số lượng" }]}
+              initialValue={1}
+            >
+              <InputNumber min={0} max={1000000} style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+
+          <Col flex="auto">
+            <Form.Item label="Đơn giá" name="DON_GIA" rules={[{ required: true, message: "" }]}>
+              <Input readOnly />
+            </Form.Item>
+          </Col>
+
+          <Col flex="auto">
+            <Form.Item
+              label="Thành tiền"
+              name="THANH_TIEN"
+              rules={[{ required: true, message: "" }]}
+            >
+              <Input readOnly />
+            </Form.Item>
+          </Col>
+
+          <Col>
+            <Form.Item>
+              <Button type="primary" onClick={() => formThemSach.submit()} icon={<PlusOutlined />}>
+                Thêm sách
+              </Button>
+            </Form.Item>
+          </Col>
+        </Row>
+      </Form>
+
+      <Table
+        dataSource={selectedBooks}
+        columns={
+          !current
+            ? [
+                ...columns,
+                {
+                  width: 65,
+                  render: (_, record) => (
+                    <Button
+                      icon={<DeleteOutlined />}
+                      type="primary"
+                      danger
+                      onClick={() => handleDelete(record.key)}
+                    ></Button>
+                  ),
+                },
+              ]
+            : columns
+        }
+        pagination={false}
+        scroll={{ y: "30vh" }}
+        footer={() => <div>Tổng thanh toán: {totalPayment}</div>}
+      />
+
+      {!current && (
+        <>
+          <br />
+          <Radio.Group value={paymentMethod} onChange={handleChangePaymentMethod}>
+            <Space direction="vertical">
+              <Radio value="cod">Thanh toán bằng tiền mặt</Radio>
+              <Radio value="paypal">Thanh toán bằng Paypal</Radio>
+            </Space>
+
+            <div
+              style={{
+                display: paymentMethod === "paypal" ? "block" : "none",
+                marginTop: 20,
+              }}
+            >
+              <PayPalScriptProvider
+                // deferLoading={totalPrice ? true : false}
+                options={initialOptions}
+              >
+                <PayPalButtons
+                  createOrder={(data, actions) => {
+                    return actions.order
                       .create({
                         description: "DISDIS",
                         purchase_units: [
@@ -251,19 +321,20 @@ function ModalAddPhieuMuon({ onOK, loading = false, onEdit }, ref) {
                         // Your code here after create the order
                         return orderId;
                       });
-                }}
-                onApprove={(data, actions) => {
-                  return actions.order.capture().then((details) => {
-                    // onSuccessPaypalPayment(details);
-                    alert(`Thanh toán thành công, đang chuyển hướng bạn về trang đơn hàng`);
-                  });
-                }}
-            />
-          </PayPalScriptProvider>
-        </div>
-      </Radio.Group>
+                  }}
+                  onApprove={(data, actions) => {
+                    return actions.order.capture().then((details) => {
+                      // onSuccessPaypalPayment(details);
+                      alert(`Thanh toán thành công, đang chuyển hướng bạn về trang đơn hàng`);
+                    });
+                  }}
+                />
+              </PayPalScriptProvider>
+            </div>
+          </Radio.Group>
+        </>
+      )}
     </Modal>
-
   );
 }
 

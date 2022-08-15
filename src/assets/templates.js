@@ -22,6 +22,9 @@ export const templates = {
                 <tr>
                     <td><span style="font-size:14px">STT</span></td>
                     <td><span style="font-size:14px">T&ecirc;n s&aacute;ch</span></td>
+                    <td><span style="font-size:14px">Số lượng</span></td>
+                    <td><span style="font-size:14px">Đơn giá</span></td>
+                    <td><span style="font-size:14px">Thành tiền</span></td>
                 </tr>
                 [SACH]
             </tbody>
